@@ -18,7 +18,7 @@ export const Navbar = () => {
           <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-warm shadow-glow group-hover:scale-105 transition-smooth">
             <UtensilsCrossed className="h-5 w-5 text-accent-foreground" />
           </div>
-          <span className="font-display text-2xl font-bold tracking-tight">Saffron</span>
+          <span className="font-display text-2xl font-bold tracking-tight">Outdoor Delivery</span>
         </Link>
 
         <nav className="flex items-center gap-2">

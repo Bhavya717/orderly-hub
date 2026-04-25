@@ -22,7 +22,7 @@ const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    setQrImg(getQR());
+    getQR().then(setQrImg);
     if (items.length === 0) navigate("/cart", { replace: true });
   }, [items.length, navigate]);
 
@@ -40,16 +40,22 @@ const Checkout = () => {
     if (!/^\d{10}$/.test(phone.trim())) return toast.error("Enter a valid 10-digit phone number");
     if (!screenshot) return toast.error("Please upload payment screenshot");
     setSubmitting(true);
-    const order = createOrder({
-      userId: user.id,
-      customerName: user.name,
-      phone: phone.trim(),
-      items,
-      totalAmount: total,
-      paymentScreenshot: screenshot,
-    });
-    clear();
-    setTimeout(() => navigate(`/order-success/${order.tokenId}`), 400);
+    try {
+      const order = await createOrder({
+        userId: user.id,
+        customerName: user.name,
+        phone: phone.trim(),
+        items,
+        totalAmount: total,
+        paymentScreenshot: screenshot,
+      });
+      clear();
+      setTimeout(() => navigate(`/order-success/${order.tokenId}`), 400);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to place order";
+      toast.error(msg);
+      setSubmitting(false);
+    }
   };
 
   return (

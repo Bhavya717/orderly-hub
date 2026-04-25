@@ -18,10 +18,7 @@ const Index = () => {
   const [activeCat, setActiveCat] = useState<string>("All");
 
   useEffect(() => {
-    setMenu(getMenu());
-    const h = () => setMenu(getMenu());
-    window.addEventListener("storage", h);
-    return () => window.removeEventListener("storage", h);
+    getMenu().then(setMenu);
   }, []);
 
   const categories = useMemo(() => ["All", ...Array.from(new Set(menu.map((m) => m.category || "Other")))], [menu]);

@@ -15,7 +15,11 @@ const OrderHistory = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "processing" | "completed">("all");
   const [dateFilter, setDateFilter] = useState("");
 
-  const refresh = () => setOrders(getOrders().filter((o) => o.userId === user?.id));
+  const refresh = async () => {
+    if (!user?.id) return;
+    const all = await getOrders();
+    setOrders(all.filter((o) => o.userId === user.id));
+  };
   useEffect(() => { refresh(); }, [user?.id]);
 
   const filtered = useMemo(() => orders.filter((o) => {
@@ -24,8 +28,8 @@ const OrderHistory = () => {
     return true;
   }), [orders, statusFilter, dateFilter]);
 
-  const handleDelete = (id: string) => {
-    deleteOrder(id);
+  const handleDelete = async (id: string) => {
+    await deleteOrder(id);
     toast.success("Order removed");
     refresh();
   };

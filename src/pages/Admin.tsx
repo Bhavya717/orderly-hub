@@ -26,12 +26,13 @@ const Admin = () => {
   const [phoneFilter, setPhoneFilter] = useState("");
   const [previewShot, setPreviewShot] = useState<string | null>(null);
 
-  const refresh = () => { setOrders(getOrders()); setMenu(getMenu()); setQrImg(getQR()); };
+  const refresh = async () => {
+    setOrders(await getOrders());
+    setMenu(await getMenu());
+    setQrImg(await getQR());
+  };
   useEffect(() => {
     refresh();
-    const h = () => refresh();
-    window.addEventListener("storage", h);
-    return () => window.removeEventListener("storage", h);
   }, []);
 
   const filteredOrders = useMemo(() => orders.filter((o) => {
@@ -47,13 +48,13 @@ const Admin = () => {
     revenue: orders.reduce((s, o) => s + o.totalAmount, 0),
   }), [orders]);
 
-  const markComplete = (id: string) => { updateOrder(id, { status: "completed" }); toast.success(`${id} marked complete`); refresh(); };
+  const markComplete = async (id: string) => { await updateOrder(id, { status: "completed" }); toast.success(`${id} marked complete`); refresh(); };
 
   const handleQR = (f: File | null) => {
     if (!f) return;
     if (f.size > 1_500_000) return toast.error("Image too large (max 1.5 MB)");
     const r = new FileReader();
-    r.onload = () => { setQR(r.result as string); toast.success("QR updated"); refresh(); };
+    r.onload = async () => { await setQR(r.result as string); toast.success("QR updated"); refresh(); };
     r.readAsDataURL(f);
   };
 
@@ -161,7 +162,7 @@ const Admin = () => {
           {/* MENU */}
           <TabsContent value="menu" className="mt-6">
             <div className="flex justify-end">
-              <MenuDialog onSave={(it) => { upsertMenuItem(it); toast.success("Menu updated"); refresh(); }} />
+              <MenuDialog onSave={async (it) => { await upsertMenuItem(it); toast.success("Menu updated"); refresh(); }} />
             </div>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {menu.map((m) => (
@@ -169,8 +170,8 @@ const Admin = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-2xl">{m.image || "🍽️"}</div>
                     <div className="flex gap-1">
-                      <MenuDialog item={m} onSave={(it) => { upsertMenuItem(it); toast.success("Updated"); refresh(); }} />
-                      <Button size="icon" variant="ghost" onClick={() => { deleteMenuItem(m.id); toast.success("Deleted"); refresh(); }}>
+                      <MenuDialog item={m} onSave={async (it) => { await upsertMenuItem(it); toast.success("Updated"); refresh(); }} />
+                      <Button size="icon" variant="ghost" onClick={async () => { await deleteMenuItem(m.id); toast.success("Deleted"); refresh(); }}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>

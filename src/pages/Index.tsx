@@ -135,7 +135,7 @@ const Index = () => {
 
       <footer className="border-t border-border bg-secondary/30 py-10">
         <div className="container text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Saffron Restaurant · Crafted with care
+          © {new Date().getFullYear()} Outdoor Delivery · Crafted with care
         </div>
       </footer>
     </div>
